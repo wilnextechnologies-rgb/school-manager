@@ -1,0 +1,200 @@
+{% extends "base.html" %}{% block title %}- Report Card{% endblock %}
+{% block extra_head %}
+<style>
+@media print{.no-print{display:none!important}body{font-size:11pt;background:white;width:100%}@page{size:A4;margin:4mm}.report-card-page{max-width:100%;padding:0!important;margin:0!important;width:100%}.report-card-page .badge{border:1px solid #333;color:#000!important;background:#f9f9f9!important;font-size:7pt;padding:2px 6px}}
+.report-card-page{max-width:100%;margin:0 auto;padding:10px}
+.report-header{text-align:center;border-bottom:2px solid #1a73e8;padding-bottom:5px;margin-bottom:6px}
+.report-header h2{color:#1a73e8;font-weight:bold;margin:3px 0;font-size:14pt}
+.signature-line{border-top:1px solid #333;width:160px;margin:10px auto 0;padding-top:3px;text-align:center;font-size:7pt}
+</style>
+{% endblock %}
+{% block content %}
+<div class="no-print mb-3">
+<h2><i class="bi bi-file-earmark-text"></i> Report Card</h2><hr>
+<div class="card"><div class="card-body">
+<form method="POST" class="row g-3">
+<div class="col-md-4"><label>Student *</label>
+<select name="student_id" class="form-select" required>
+<option value="">Select</option>
+{% for s in students %}
+<option value="{{ s.id }}" {% if student and student.id==s.id %}selected{% endif %}>{{ s.full_name }} ({{ s.admission_number }})</option>
+{% endfor %}
+</select></div>
+<div class="col-md-3"><label>Exam 1 *</label>
+<select name="exam1_id" class="form-select" required>
+<option value="">Select</option>
+{% for e in exams %}
+<option value="{{ e.id }}" {% if exams_selected and exams_selected|length>0 and exams_selected[0].id==e.id %}selected{% endif %}>{{ e.name }}</option>
+{% endfor %}
+</select></div>
+<div class="col-md-3"><label>Exam 2</label>
+<select name="exam2_id" class="form-select">
+<option value="">None</option>
+{% for e in exams %}
+<option value="{{ e.id }}" {% if exams_selected and exams_selected|length>1 and exams_selected[1].id==e.id %}selected{% endif %}>{{ e.name }}</option>
+{% endfor %}
+</select></div>
+<div class="col-md-2"><label>Exam 3</label>
+<select name="exam3_id" class="form-select">
+<option value="">None</option>
+{% for e in exams %}
+<option value="{{ e.id }}" {% if exams_selected and exams_selected|length>2 and exams_selected[2].id==e.id %}selected{% endif %}>{{ e.name }}</option>
+{% endfor %}
+</select></div>
+<div class="col-12"><button type="submit" class="btn btn-info w-100">Generate Report Card</button></div>
+</form></div></div>
+
+<div class="card mt-3">
+<div class="card-header bg-danger text-white"><i class="bi bi-file-pdf"></i> Download ALL Report Cards as PDF</div>
+<div class="card-body">
+<form method="POST" action="{{ url_for('bulk_report_cards_print') }}" class="row g-3" target="_blank">
+<div class="col-md-4"><label>Class *</label>
+<select name="class_id" class="form-select" required>
+<option value="">Select</option>
+{% for c in classes %}
+<option value="{{ c.id }}">{{ c.name }}</option>
+{% endfor %}
+</select></div>
+<div class="col-md-3"><label>Exam 1 *</label>
+<select name="exam1_id" class="form-select" required>
+<option value="">Select</option>
+{% for e in exams %}
+<option value="{{ e.id }}">{{ e.name }}</option>
+{% endfor %}
+</select></div>
+<div class="col-md-3"><label>Exam 2</label>
+<select name="exam2_id" class="form-select">
+<option value="">None</option>
+{% for e in exams %}
+<option value="{{ e.id }}">{{ e.name }}</option>
+{% endfor %}
+</select></div>
+<div class="col-md-2"><label>Exam 3</label>
+<select name="exam3_id" class="form-select">
+<option value="">None</option>
+{% for e in exams %}
+<option value="{{ e.id }}">{{ e.name }}</option>
+{% endfor %}
+</select></div>
+<div class="col-12"><button type="submit" class="btn btn-danger w-100"><i class="bi bi-file-pdf"></i> Download ALL Report Cards as PDF</button></div>
+</form></div></div>
+</div>
+
+{% if report and student %}
+<div class="report-card-page"><div class="card shadow"><div class="card-body p-2">
+<div class="report-header">
+{% if school.logo_url %}<img src="{{ school.logo_url }}" style="max-height:120px;margin-bottom:3px;">{% endif %}
+<h2>{{ school.school_name }}</h2>
+{% if school.po_box or school.school_address or school.city %}
+<div style="font-size:0.8em;color:#555;">
+{% if school.po_box %}P.O. Box {{ school.po_box }}{% endif %}
+{% if school.po_box and school.school_address %}, {% endif %}
+{{ school.school_address or '' }}{% if school.school_address and school.city %}, {% endif %}{{ school.city or '' }}</div>{% endif %}
+{% if school.school_phone or school.school_email %}
+<div style="font-size:0.8em;color:#555;">
+{% if school.school_phone %}Tel: {{ school.school_phone }}{% endif %}
+{% if school.school_phone and school.school_email %} | {% endif %}
+{% if school.school_email %}Email: {{ school.school_email }}{% endif %}</div>{% endif %}
+{% if school.school_motto %}<div style="font-style:italic;color:#666;font-size:0.8em;">{{ school.school_motto }}</div>{% endif %}
+</div>
+
+<table class="table table-sm table-borderless" style="font-size:8pt;">
+<tr><td width="120"><strong>Name:</strong></td><td width="300">{{ student.full_name }}</td><td width="70"><strong>Grade:</strong></td><td>{% if student.class_ %}{{ student.class_.name }}{% else %}N/A{% endif %}</td></tr>
+<tr><td><strong>Total Marks:</strong></td><td>{{ total_marks }} / {{ out_of_marks }}</td><td><strong>Position:</strong></td><td>{{ rank }}/{{ total_students }}</td></tr>
+<tr><td><strong>Term:</strong></td><td>{{ term_display }}</td><td><strong>Year:</strong></td><td>{{ current_year }}</td></tr>
+</table>
+
+{% set grade_level = 'Below Expectations' %}
+{% if total_marks >= 800 %}{% set grade_level = 'Exceeding Expectations' %}
+{% elif total_marks >= 450 %}{% set grade_level = 'Meeting Expectations' %}
+{% elif total_marks >= 201 %}{% set grade_level = 'Approaching Expectations' %}
+{% endif %}
+<div style="text-align:center;font-size:0.75em;background:#f0f8ff;padding:2px;border-radius:3px;margin-bottom:3px;"><strong>Overall Grade Level:</strong> {{ grade_level }}</div>
+
+<table class="table table-bordered" style="font-size:8pt;">
+<thead class="table-secondary">
+<tr><th style="width:25%">Learning Area</th>
+{% for exam in report.exams %}
+<th style="text-align:center">{{ exam.name }}<br><small>Mks/Grd</small></th>
+{% endfor %}
+<th style="text-align:center">Pts</th><th style="text-align:center">Teacher</th></tr>
+</thead>
+<tbody>
+{% for row in report.subjects %}
+<tr>
+<td><strong>{{ row.subject.name }}</strong></td>
+{% for exam in report.exams %}
+<td style="text-align:center;padding:3px 2px;">
+{% if row.exams[exam.id] %}{{ row.exams[exam.id].mark }} <span class="badge bg-secondary">{{ row.exams[exam.id].grade }}</span>{% else %}-{% endif %}</td>
+{% endfor %}
+<td style="text-align:center;padding:3px 2px;"><strong>{{ row.grade_points }}</strong></td>
+<td style="text-align:center;padding:3px 2px;">{{ teacher_map.get(row.subject.id|string + '_' + student.class_id|string, row.subject.teacher or '-') }}</td>
+</tr>
+{% endfor %}
+</tbody></table>
+
+<div style="margin:3px 0;border-top:1px solid #ccc;padding-top:3px;">
+<h4 style="text-align:center;margin:0 0 3px 0;font-size:8pt;">Learning Pathways Performance</h4>
+<table style="width:100%;">
+{% set vals = [pathway_data.get('SOCIAL SCIENCES',0), pathway_data.get('STEM',0), pathway_data.get('ARTS AND SPORTS',0)] %}
+{% set max_val = (vals|sort|last) if vals|length > 0 else 100 %}
+{% set bar_max = max_val if max_val > 0 else 100 %}
+{% for pathway, color in [('SOCIAL SCIENCES','#00b894'),('STEM','#1a73e8'),('ARTS AND SPORTS','#e84393')] %}
+{% set avg = pathway_data.get(pathway, 0) %}
+{% set pct = (avg / bar_max * 100) if bar_max > 0 else 0 %}
+<tr>
+<td style="width:110px;font-size:7pt;padding:1px;"><strong>{{ pathway }}</strong></td>
+<td style="width:25px;font-size:7pt;text-align:right;padding:1px;">{{ avg }}%</td>
+<td style="padding:1px;"><div style="background:#eee;height:10px;border-radius:5px;overflow:hidden;"><div style="height:10px;width:{{ pct }}%;background:{{ color }};border-radius:5px;"></div></div></td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<div style="margin:2px 0;font-size:0.65em;border-top:1px solid #eee;padding-top:2px;">
+<strong>Next Term Begins:</strong> {{ school.term_begins or 'TBD' }} &nbsp;&nbsp; <strong>Closing Date:</strong> {{ school.closing_date or 'TBD' }}
+</div>
+
+{% if total_marks >= 801 %}
+{% set crm = 'Exceptional performance. You have demonstrated academic excellence - keep aiming higher.' %}
+{% set hrm = 'Congratulations on your remarkable accomplishment. Keep up the excellent work and continue inspiring others through your dedication.' %}
+{% elif total_marks >= 701 %}
+{% set crm = 'Outstanding performance. Your commitment and dedication are highly commendable.' %}
+{% set hrm = 'Exceptional achievement. Continue striving for even greater success while remaining humble and disciplined.' %}
+{% elif total_marks >= 601 %}
+{% set crm = 'Excellent performance. Keep up the outstanding work and maintain your determination.' %}
+{% set hrm = 'Congratulations on your impressive achievement. Continue to be a role model to others.' %}
+{% elif total_marks >= 501 %}
+{% set crm = 'Very good performance. Your hard work is evident; remain focused and consistent.' %}
+{% set hrm = 'Excellent progress. Keep challenging yourself and continue pursuing academic excellence.' %}
+{% elif total_marks >= 401 %}
+{% set crm = 'Good performance. You have demonstrated commitment - keep working hard to improve further.' %}
+{% set hrm = 'Well done. Continue building on your strengths and maintain your positive attitude toward learning.' %}
+{% elif total_marks >= 301 %}
+{% set crm = 'Satisfactory performance. Keep up the effort and strive for higher achievement.' %}
+{% set hrm = 'Commendable progress. Maintain consistency and continue aiming for excellence.' %}
+{% elif total_marks >= 201 %}
+{% set crm = 'Average performance. Continue working consistently and improve in weaker subjects.' %}
+{% set hrm = 'A good foundation has been laid. With greater dedication, you can achieve much better results.' %}
+{% elif total_marks >= 101 %}
+{% set crm = 'Fair effort shown, but performance is below expectations. Work harder and complete all assignments.' %}
+{% set hrm = 'There is room for improvement. Stay focused, disciplined, and aim for better results next term.' %}
+{% else %}
+{% set crm = 'Needs significant improvement. Attend classes regularly and put more effort into your studies.' %}
+{% set hrm = 'Much more commitment is required. Seek guidance from your teachers and remain determined to improve.' %}
+{% endif %}
+
+<div style="font-size:0.65em;border-top:1px solid #ccc;padding-top:2px;margin-top:2px;">
+<p style="margin:1px 0;"><strong>Class Teacher's Remarks:</strong> <em>{{ crm }}</em></p>
+<p style="margin:1px 0;"><strong>Head of Institution's Remarks:</strong> <em>{{ hrm }}</em></p>
+</div>
+<div class="row" style="margin-top:2px;">
+<div class="col-4 text-center"><div class="signature-line">Class Teacher</div></div>
+
+<div class="col-4 text-center"><div class="signature-line">Head of Institution</div></div>
+
+</div>
+</div></div>
+<div class="text-center mt-3 no-print"><button onclick="window.print()" class="btn btn-primary"><i class="bi bi-printer"></i> Print / PDF</button></div></div>
+{% endif %}
+{% endblock %}

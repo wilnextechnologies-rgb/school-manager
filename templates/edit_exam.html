@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}- Edit Exam{% endblock %}
+{% block content %}
+<h2><i class="bi bi-pencil"></i> Edit Exam Type</h2>
+<hr>
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-header bg-warning">Edit: {{ exam.name }}</div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-2">
+                        <label class="form-label">Exam Name *</label>
+                        <input type="text" name="name" class="form-control" value="{{ exam.name }}" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Term</label>
+                        <select name="term" class="form-select">
+                            <option value="">No Term</option>
+                            <option value="Term 1" {% if exam.term == 'Term 1' %}selected{% endif %}>Term 1</option>
+                            <option value="Term 2" {% if exam.term == 'Term 2' %}selected{% endif %}>Term 2</option>
+                            <option value="Term 3" {% if exam.term == 'Term 3' %}selected{% endif %}>Term 3</option>
+                        </select>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col">
+                            <label class="form-label">Max Marks</label>
+                            <input type="number" name="max_marks" class="form-control" value="{{ exam.max_marks }}" step="0.5">
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Subjects</label>
+                            <input type="number" name="subject_count" class="form-control" value="{{ exam.subject_count }}">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" rows="2">{{ exam.description or '' }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">Update Exam Type</button>
+                    <a href="{{ url_for('exams') }}" class="btn btn-secondary w-100 mt-1">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

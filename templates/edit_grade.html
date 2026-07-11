@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% block title %}- Edit Grade{% endblock %}{% block content %}
+<h2>Edit Grade</h2><hr>
+<div class="row"><div class="col-md-6 mx-auto">
+<div class="card"><div class="card-header bg-warning">Edit: {{ grade.grade }}</div>
+<div class="card-body">
+<form method="POST">
+<div class="mb-2"><label>Grade *</label><input type="text" name="grade" class="form-control" value="{{ grade.grade }}" required></div>
+<div class="row mb-2"><div class="col"><label>Min % *</label><input type="number" name="min_percentage" class="form-control" value="{{ grade.min_percentage }}" step="0.01" required></div>
+<div class="col"><label>Max % *</label><input type="number" name="max_percentage" class="form-control" value="{{ grade.max_percentage }}" step="0.01" required></div></div>
+<div class="mb-2"><label>Performance Level *</label><input type="text" name="performance_level" class="form-control" value="{{ grade.performance_level }}" required></div>
+<div class="mb-2"><label>Points (GPA)</label><input type="number" name="points" class="form-control" value="{{ grade.points or '' }}" step="0.5"></div>
+<div class="mb-2"><label>Description</label><textarea name="description" class="form-control" rows="2">{{ grade.description or '' }}</textarea></div>
+<button type="submit" class="btn btn-warning w-100">Update Grade</button>
+<a href="{{ url_for('grades') }}" class="btn btn-secondary w-100 mt-1">Cancel</a>
+</form></div></div></div></div>
+{% endblock %}

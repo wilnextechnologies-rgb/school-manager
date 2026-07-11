@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Merit List - {{ exam.name }}</title>
+<style>
+@page { size: A4 landscape; margin: 10mm; }
+body { font-family: Arial, sans-serif; font-size: 10pt; margin:0; padding:10px; }
+.header { text-align: center; margin-bottom: 10px; }
+.header h2 { margin:0; color:#1a73e8; font-size:16pt; }
+.header h3 { margin:2px 0; font-size:11pt; font-weight:normal; color:#555; }
+table { width:100%; border-collapse: collapse; font-size: 8.5pt; }
+th { background: #1a73e8; color: white; padding: 4px 3px; text-align: center; font-size:7.5pt; }
+td { padding: 3px; text-align: center; border: 1px solid #ccc; }
+td.name { text-align: left; white-space: nowrap; }
+.rank-1 { background: #fff3cd; font-weight: bold; }
+.rank-2 { background: #d1ecf1; }
+.rank-3 { background: #d4edda; }
+.grade { font-weight: bold; color: #1a73e8; }
+.footer { text-align: center; margin-top: 8px; font-size: 7pt; color: #888; }
+@media print { body { padding:0; } }
+</style>
+</head>
+<body>
+<div class="header">
+<h2>{{ school.school_name }}</h2>
+<h3>Merit List - {{ exam.name }} - {{ class_.name }}</h3>
+</div>
+<table>
+<thead><tr>
+<th style="width:55px;">ADM</th>
+<th style="text-align:left;padding-left:5px;width:120px;">Name</th>
+{% set subj_map = {'English':'ENG','Kiswahili':'KIS','Mathematics':'MATHS','Science':'INT/SCI','Pre-Technical':'PRETECH','Agriculture':'AGRI/NUT','Social Studies':'SOST','CRE':'CRE','Creative Arts':'CAS'} %}
+{% set subj_map = {'English':'ENG','Kiswahili':'KIS','Mathematics':'MATHS','Science':'INT/SCI','Pre-Technical':'PRETECH','Agriculture':'AGRI/NUT','Social Studies':'SOST','CRE':'CRE','Creative Arts':'CAS'} %}
+{% for subj in all_subjects %}
+<th style="width:55px;">{{ subj_map.get(subj.name, subj.name[:5]) }}</th>
+{% endfor %}
+
+<th style="width:35px;">Total</th>
+<th style="width:30px;">%</th>
+<th style="width:25px;">Grd</th>
+<th style="width:25px;">Rank</th>
+</tr></thead>
+<tbody>
+{% for r in results %}
+<tr class="{% if r.rank==1 %}rank-1{% elif r.rank==2 %}rank-2{% elif r.rank==3 %}rank-3{% endif %}">
+<td>{{ r.student.admission_number if r.student else '?' }}</td>
+<td style="text-align:left;white-space:nowrap;overflow:hidden;max-width:120px;">{{ r.student.full_name if r.student else '?' }}</td>
+{% for subj in all_subjects %}
+{% set sm = r.subject_marks.get(subj.id) %}
+<td>{% if sm %}{{ sm.marks }} <span class="grade">{{ sm.grade }}</span>{% else %}-{% endif %}</td>
+{% endfor %}
+<td><strong>{{ r.total_obtained }}</strong></td>
+<td>{{ r.percentage }}%</td>
+<td><strong>{{ r.grade }}</strong></td>
+<td><strong>{{ r.rank }}</strong></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+<div class="footer">Computer-generated report</div>
+<script>window.print();</script>
+</body>
+</html>

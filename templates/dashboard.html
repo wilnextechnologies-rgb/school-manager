@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}- Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-speedometer2"></i> Dashboard</h2>
+    <span class="text-muted">Welcome, {{ current_user.full_name }}!</span>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body text-center">
+                <h1><i class="bi bi-people-fill"></i></h1>
+                <h3>{{ student_count }}</h3>
+                <p class="mb-0">Students</p>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{{ url_for('students') }}" class="text-white">Manage →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body text-center">
+                <h1><i class="bi bi-person-badge-fill"></i></h1>
+                <h3>{{ teacher_count }}</h3>
+                <p class="mb-0">Teachers</p>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{{ url_for('teachers') }}" class="text-white">Manage →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body text-center">
+                <h1><i class="bi bi-book-fill"></i></h1>
+                <h3>{{ class_count }}</h3>
+                <p class="mb-0">Classes</p>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{{ url_for('classes') }}" class="text-white">Manage →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body text-center">
+                <h1><i class="bi bi-pencil-square"></i></h1>
+                <h3>{{ exam_count }}</h3>
+                <p class="mb-0">Exams</p>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{{ url_for('exams') }}" class="text-white">Manage →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4 g-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-lightning"></i> Quick Actions</div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('marks') }}" class="btn btn-outline-primary">Enter Marks</a>
+                    <a href="{{ url_for('merit_list') }}" class="btn btn-outline-success">View Merit List</a>
+                    <a href="{{ url_for('report_card') }}" class="btn btn-outline-info">Generate Report Card</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-gear"></i> Settings</div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('school_settings') }}" class="btn btn-outline-secondary">School Settings</a>
+                    <a href="{{ url_for('exams') }}" class="btn btn-outline-secondary">Exam Types</a>
+                    <a href="{{ url_for('grades') }}" class="btn btn-outline-secondary">Grades & Performance</a>
+                    <a href="{{ url_for('subjects') }}" class="btn btn-outline-secondary">Subjects</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}- Import Marks{% endblock %}
+{% block content %}
+<h2><i class="bi bi-upload"></i> Import Marks from CSV</h2>
+<hr>
+<div class="row">
+<div class="col-md-8 mx-auto">
+<div class="card">
+<div class="card-header bg-success text-white"><i class="bi bi-file-earmark-spreadsheet"></i> Upload CSV</div>
+<div class="card-body">
+<form method="POST" enctype="multipart/form-data" class="row g-3">
+<div class="col-md-6">
+<label class="form-label">Exam *</label>
+<select name="exam_id" class="form-select" required>
+<option value="">Select Exam</option>
+{% for e in exams %}
+<option value="{{ e.id }}">{{ e.name }}</option>
+{% endfor %}
+</select>
+</div>
+<div class="col-md-6">
+<label class="form-label">CSV File *</label>
+<input type="file" name="csv_file" class="form-control" accept=".csv" required>
+</div>
+<div class="col-12">
+<button type="submit" class="btn btn-success w-100"><i class="bi bi-upload"></i> Import Marks</button>
+</div>
+</form>
+</div>
+</div>
+
+<div class="card mt-3">
+<div class="card-header bg-info text-white">How to Export from Google Sheets</div>
+<div class="card-body">
+<ol>
+<li>Open your Google Sheet</li>
+<li>File → Download → Comma Separated Values (.csv)</li>
+<li>Make sure columns are: <code>ADMNO, NAME, GENDER, ENG, KISW, MATHS, SCIE, AGRI, PRETECH, SOCIAL, CRE, CAS</code></li>
+<li>Upload here</li>
+</ol>
+<p class="small text-muted mb-0">Students must already exist (matched by ADMNO).</p>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

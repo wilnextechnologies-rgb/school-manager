@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% block title %}- Student Dashboard{% endblock %}{% block content %}
+<h2><i class="bi bi-person-circle"></i> Student Portal</h2>
+<hr>
+<div class="card mb-4"><div class="card-header bg-info text-white">{{ student.full_name }} - {{ student.admission_number }}</div>
+<div class="card-body">
+<p><strong>Class:</strong> {{ student.class_.name }} | <strong>Gender:</strong> {{ student.gender or '-' }}</p>
+<a href="{{ url_for('student_logout') }}" class="btn btn-danger">Logout</a>
+</div></div>
+<h4><i class="bi bi-book"></i> My Assignments</h4>
+{% if assignments %}
+<table class="table table-striped"><thead><tr><th>Title</th><th>Subject</th><th>Due Date</th><th>File</th></tr></thead>
+<tbody>{% for a in assignments %}<tr>
+<td>{{ a.title }}</td><td>{{ a.subject.name }}</td><td>{{ a.due_date or '-' }}</td>
+<td>{% if a.file_url %}<a href="{{ a.file_url }}" class="btn btn-sm btn-primary" download>Download</a>{% else %}No file{% endif %}</td>
+</tr>{% endfor %}</tbody></table>
+{% else %}<p class="text-muted">No assignments yet.</p>{% endif %}
+{% endblock %}

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Report Cards</title>
+<style>
+@page { size: A4 portrait; margin: 8mm; }
+body { font-family: Arial, sans-serif; font-size: 11pt; margin: 0; padding: 0; width: 100%; background: white; }
+.page-break { page-break-before: always; }
+.first-page { page-break-before: avoid; }
+.report-card-page { width: 100%; margin: 0; padding: 5px; }
+.report-header { text-align: center; border-bottom: 2px solid #1a73e8; padding-bottom: 5px; margin-bottom: 10px; }
+.report-header h2 { color: #1a73e8; font-weight: bold; margin: 3px 0; font-size: 16pt; }
+.motto { font-style: italic; color: #666; font-size: 9pt; }
+.info-table { width: 100%; margin-bottom: 8px; font-size: 10pt; }
+.info-table td { padding: 2px 5px; border: none; }
+table.marks { width: 100%; border-collapse: collapse; font-size: 10pt; }
+table.marks th { background: #6c757d; color: white; padding: 6px; text-align: center; font-size: 8pt; font-weight: bold; }
+table.marks td { padding: 6px 4px; border: 1px solid #dee2e6; text-align: center; font-size: 9pt; font-weight: bold; }
+.signature-line { border-top: 1px solid #333; width: 170px; margin: 20px auto 0; padding-top: 3px; text-align: center; font-size: 9pt; }
+.remarks { font-size: 0.8em; border-top: 1px solid #ccc; padding-top: 6px; margin-top: 40px; }
+.remarks p { margin: 4px 0; }
+.grade-level { text-align: center; font-size: 0.9em; background: #f0f8ff; padding: 5px; border-radius: 4px; margin-bottom: 8px; }
+.badge { display: inline-block; padding: 2px 8px; font-size: 0.8em; border-radius: 8px; background: #6c757d; color: white !important; border: 1px solid #333; font-weight: bold; }
+</style>
+</head>
+<body>
+{% for report in all_reports %}
+<div class="{% if loop.first %}first-page{% else %}page-break{% endif %}">
+<div class="report-card-page">
+<div class="report-header">
+{% if school.logo_url %}<img src="{{ school.logo_url }}" style="max-height:160px;margin-bottom:5px;">{% endif %}
+<h2>{{ school.school_name }}</h2>
+{% if school.po_box or school.school_address or school.city %}
+<div style="font-size:0.85em;color:#555;">
+{% if school.po_box %}P.O. Box {{ school.po_box }}{% endif %}
+{% if school.po_box and school.school_address %}, {% endif %}
+{{ school.school_address or '' }}{% if school.school_address and school.city %}, {% endif %}{{ school.city or '' }}
+</div>{% endif %}
+{% if school.school_phone or school.school_email %}
+<div style="font-size:0.85em;color:#555;">
+{% if school.school_phone %}Tel: {{ school.school_phone }}{% endif %}
+{% if school.school_phone and school.school_email %} | {% endif %}
+{% if school.school_email %}Email: {{ school.school_email }}{% endif %}
+</div>{% endif %}
+{% if school.school_motto %}<div class="motto">{{ school.school_motto }}</div>{% endif %}
+</div>
+
+<table class="info-table">
+<tr><td width="120"><strong>Name:</strong></td><td width="280">{{ report.student.full_name }}</td><td width="70"><strong>Grade:</strong></td><td>{{ class_.name }}</td></tr>
+<tr><td><strong>Total Marks:</strong></td><td>{{ report.total_marks }} / {{ report.out_of_marks }}</td><td><strong>Position:</strong></td><td>{{ report.rank }}/{{ total_students }}</td></tr>
+<tr><td><strong>Term:</strong></td><td>{{ term_display }}</td><td><strong>Year:</strong></td><td>{{ current_year }}</td></tr>
+</table>
+
+{% set total = report.total_marks %}
+{% set grade_level = 'Below Expectations' %}
+{% if total >= 800 %}{% set grade_level = 'Exceeding Expectations' %}
+{% elif total >= 450 %}{% set grade_level = 'Meeting Expectations' %}
+{% elif total >= 201 %}{% set grade_level = 'Approaching Expectations' %}
+{% endif %}
+<div class="grade-level"><strong>Overall Grade Level:</strong> {{ grade_level }}</div>
+
+<table class="marks">
+<thead><tr>
+<th style="width:25%">Learning Area</th>
+{% for ex in exams %}
+<th>{{ ex.name }}<br><small>Mks/Grd</small></th>
+{% endfor %}
+<th>Pts</th><th>Teacher</th></tr></thead>
+<tbody>
+{% for row in report.subjects %}
+<tr>
+<td style="text-align:left;">{{ row.subject.name }}</td>
+{% for ex in exams %}
+<td>{% if row.exams[ex.id] %}{{ row.exams[ex.id].mark }} <span class="badge">{{ row.exams[ex.id].grade }}</span>{% else %}-{% endif %}</td>
+{% endfor %}
+<td>{{ row.grade_points }}</td>
+<td>{{ teacher_map.get(row.subject.id|string + '_' + class_.id|string, row.subject.teacher or '-') }}</td>
+</tr>
+{% endfor %}
+</tbody></table>
+<div style="margin:10px 0;font-size:0.8em;border-top:1px solid #eee;padding-top:5px;">
+<strong>Next Term Begins:</strong> {{ school.term_begins or 'TBD' }} &nbsp;&nbsp;&nbsp; <strong>Closing Date:</strong> {{ school.closing_date or 'TBD' }}
+</div>
+
+<div style="margin:60px 0 30px 0;border-top:1px solid #ccc;padding-top:15px;">
+<h4 style="text-align:center;margin:0 0 8px 0;font-size:10pt;">Learning Pathways Performance</h4>
+<table style="width:100%;">
+{% set vals = [report.pathway_data.get('SOCIAL SCIENCES',0), report.pathway_data.get('STEM',0), report.pathway_data.get('ARTS AND SPORTS',0)] %}
+{% set max_val = (vals|sort|last) if vals|length > 0 else 100 %}
+{% set bar_max = max_val if max_val > 0 else 100 %}
+{% for pathway, color in [('SOCIAL SCIENCES','#00b894'),('STEM','#1a73e8'),('ARTS AND SPORTS','#e84393')] %}
+{% set avg = report.pathway_data.get(pathway, 0) %}
+{% set pct = (avg / bar_max * 100) if bar_max > 0 else 0 %}
+<tr>
+<td style="width:120px;font-size:8pt;padding:3px;"><strong>{{ pathway }}</strong></td>
+<td style="width:25px;font-size:8pt;text-align:right;padding:3px;">{{ avg }}%</td>
+<td style="padding:3px;">
+<div style="background:#eee;height:16px;border-radius:8px;overflow:hidden;">
+<div style="height:16px;width:{{ pct }}%;background:{{ color }};border-radius:8px;"></div>
+</div>
+</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+{% if total >= 801 %}
+{% set crm = 'Exceptional performance. You have demonstrated academic excellence - keep aiming higher.' %}
+{% set hrm = 'Congratulations on your remarkable accomplishment. Keep up the excellent work and continue inspiring others through your dedication.' %}
+{% elif total >= 701 %}
+{% set crm = 'Outstanding performance. Your commitment and dedication are highly commendable.' %}
+{% set hrm = 'Exceptional achievement. Continue striving for even greater success while remaining humble and disciplined.' %}
+{% elif total >= 601 %}
+{% set crm = 'Excellent performance. Keep up the outstanding work and maintain your determination.' %}
+{% set hrm = 'Congratulations on your impressive achievement. Continue to be a role model to others.' %}
+{% elif total >= 501 %}
+{% set crm = 'Very good performance. Your hard work is evident; remain focused and consistent.' %}
+{% set hrm = 'Excellent progress. Keep challenging yourself and continue pursuing academic excellence.' %}
+{% elif total >= 401 %}
+{% set crm = 'Good performance. You have demonstrated commitment - keep working hard to improve further.' %}
+{% set hrm = 'Well done. Continue building on your strengths and maintain your positive attitude toward learning.' %}
+{% elif total >= 301 %}
+{% set crm = 'Satisfactory performance. Keep up the effort and strive for higher achievement.' %}
+{% set hrm = 'Commendable progress. Maintain consistency and continue aiming for excellence.' %}
+{% elif total >= 201 %}
+{% set crm = 'Average performance. Continue working consistently and improve in weaker subjects.' %}
+{% set hrm = 'A good foundation has been laid. With greater dedication, you can achieve much better results.' %}
+{% elif total >= 101 %}
+{% set crm = 'Fair effort shown, but performance is below expectations. Work harder and complete all assignments.' %}
+{% set hrm = 'There is room for improvement. Stay focused, disciplined, and aim for better results next term.' %}
+{% else %}
+{% set crm = 'Needs significant improvement. You are below teachers expectations. Put more effort into your studies.' %}
+{% set hrm = 'Much more commitment is required. Seek guidance from your teachers and remain determined to improve.' %}
+{% endif %}
+
+<div class="remarks">
+<p style="margin-bottom:15px;"><strong>Class Teacher's Remarks:</strong> <em>{{ crm }}</em></p>
+<p><strong>Head of Institution's Remarks:</strong> <em>{{ hrm }}</em></p>
+</div>
+<div style="margin-top:20px;">
+<table style="width:100%;"><tr style="text-align:center;">
+<td style="width:33%;"><div class="signature-line">Class Teacher</div></td>
+<td style="width:33%;"><div class="signature-line">Head of Institution</div></td>
+</tr></table>
+</div>
+</div></div>
+{% endfor %}
+<script>window.print();</script>
+</body>
+</html>

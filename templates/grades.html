@@ -1,0 +1,25 @@
+{% extends "base.html" %}{% block title %}- Grades{% endblock %}{% block content %}
+<h2><i class="bi bi-trophy"></i> Grade & Performance Settings</h2><hr>
+<div class="row">
+<div class="col-md-4">
+<div class="card"><div class="card-header bg-danger text-white">Add Grade Level</div>
+<div class="card-body">
+<form method="POST">
+<div class="mb-2"><label>Grade *</label><input type="text" name="grade" class="form-control" placeholder="A" required></div>
+<div class="row mb-2"><div class="col"><label>Min % *</label><input type="number" name="min_percentage" class="form-control" step="0.01" required></div><div class="col"><label>Max % *</label><input type="number" name="max_percentage" class="form-control" step="0.01" required></div></div>
+<div class="mb-2"><label>Performance Level *</label><input type="text" name="performance_level" class="form-control" placeholder="Excellent" required></div>
+<div class="mb-2"><label>Points (GPA)</label><input type="number" name="points" class="form-control" step="0.5"></div>
+<button type="submit" class="btn btn-danger w-100">Add Grade Setting</button>
+</form></div></div></div>
+<div class="col-md-8">
+<div class="card"><div class="card-header bg-dark text-white">Grade Configuration</div>
+<div class="card-body">
+<table class="table table-striped"><thead><tr><th>Grade</th><th>Min %</th><th>Max %</th><th>Performance</th><th>Points</th><th>Action</th></tr></thead>
+<tbody>{% for g in grades %}<tr><td><strong>{{ g.grade }}</strong></td><td>{{ g.min_percentage }}%</td><td>{{ g.max_percentage }}%</td><td>{{ g.performance_level }}</td><td>{{ g.points or '-' }}</td>
+<td>
+<a href="{{ url_for('edit_grade', id=g.id) }}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
+<a href="{{ url_for('delete_grade', id=g.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="bi bi-trash"></i></a>
+</td></tr>{% else %}<tr><td colspan="6" class="text-center">No grades.</td></tr>{% endfor %}</tbody></table>
+<div class="alert alert-info mt-3"><strong>Example:</strong> A 80-100% Excellent | B 70-79 Very Good | C 60-69 Good</div>
+</div></div></div></div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}{% block title %}- Settings{% endblock %}{% block content %}
+<h2><i class="bi bi-building"></i> School Settings</h2><hr>
+<div class="row"><div class="col-md-8 mx-auto">
+<div class="card"><div class="card-header bg-primary text-white"><h5 class="mb-0"><i class="bi bi-gear"></i> School & Admin Details</h5></div>
+<div class="card-body">
+<form method="POST" enctype="multipart/form-data">
+<div class="row mb-3">
+<div class="col-md-8"><label>School Name *</label><input type="text" name="school_name" class="form-control" value="{{ school.school_name }}" required></div>
+<div class="col-md-4"><label>City</label><input type="text" name="city" class="form-control" value="{{ school.city or '' }}"></div>
+</div>
+<div class="mb-3"><label>P.O. Box</label><input type="text" name="po_box" class="form-control" value="{{ school.po_box or '' }}"></div>
+<div class="mb-3"><label>Address</label><textarea name="school_address" class="form-control" rows="2">{{ school.school_address or '' }}</textarea></div>
+<div class="row mb-3">
+<div class="col-md-6"><label>Phone</label><input type="text" name="school_phone" class="form-control" value="{{ school.school_phone or '' }}"></div>
+<div class="col-md-6"><label>Email</label><input type="email" name="school_email" class="form-control" value="{{ school.school_email or '' }}"></div>
+</div>
+<div class="mb-3"><label>Motto</label><input type="text" name="school_motto" class="form-control" value="{{ school.school_motto or '' }}"></div>
+<div class="row mb-3">
+<div class="col-md-6"><label>Next Term Begins</label><input type="date" name="term_begins" class="form-control" value="{{ school.term_begins or '' }}"></div>
+<div class="col-md-6"><label>Closing Date</label><input type="date" name="closing_date" class="form-control" value="{{ school.closing_date or '' }}"></div>
+</div>
+
+<div class="mb-3"><label>School Logo</label><input type="file" name="logo" class="form-control" accept="image/*">{% if school.logo_url %}<div class="mt-2"><img src="{{ school.logo_url }}" style="max-height:80px;"><small class="d-block text-muted">Current logo.</small></div>{% endif %}</div>
+<hr><h5 class="text-primary">Administration</h5>
+<div class="row mb-3">
+<div class="col-md-8"><label>Principal's Name</label><input type="text" name="principal_name" class="form-control" value="{{ school.principal_name or '' }}"></div>
+<div class="col-md-4"><label>Title</label><input type="text" name="principal_title" class="form-control" value="{{ school.principal_title or 'Principal' }}"></div>
+</div>
+<button type="submit" class="btn btn-primary w-100"><i class="bi bi-save"></i> Save Settings</button>
+</form></div></div></div></div>
+{% endblock %}

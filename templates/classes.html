@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}- Classes{% endblock %}
+{% block content %}
+<h2><i class="bi bi-book-fill"></i> Class Registration</h2>
+<hr>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">Create New Class</div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-2">
+                        <label class="form-label">Class Name *</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Grade 7" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Section</label>
+                        <input type="text" name="section" class="form-control" placeholder="e.g. A, B, East">
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">Create Class</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-dark text-white">All Classes</div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr><th>Class</th><th>Section</th><th>Students</th><th>Created</th><th>Action</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for c in classes %}
+                        <tr>
+                            <td>{{ c.name }}</td>
+                            <td>{{ c.section or '-' }}</td>
+                            <td>{{ c.students|length }}</td>
+                            <td>{{ c.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_class', id=c.id) }}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="text-center">No classes created.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

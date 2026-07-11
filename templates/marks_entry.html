@@ -1,0 +1,34 @@
+{% extends "base.html" %}{% block title %}- Marks Entry{% endblock %}{% block extra_head %}<style>.mark-input{width:80px}</style>{% endblock %}
+{% block content %}
+<h2><i class="bi bi-input-cursor-text"></i> Marks Entry</h2><hr>
+<form method="POST" id="marksForm">
+<div class="row mb-3">
+<div class="col-md-4"><label>Exam</label><select name="exam_type_id" class="form-select" required id="examSelect"><option value="">Select</option>{% for e in exams %}<option value="{{ e.id }}">{{ e.name }}</option>{% endfor %}</select></div>
+<div class="col-md-3"><label>Class</label><select name="class_id" class="form-select" required id="classSelect"><option value="">Select</option>{% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div>
+<div class="col-md-3"><label>Subject</label><select name="subject_id" class="form-select" required id="subjectSelect"><option value="">Select</option>{% for s in subjects %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select></div>
+<div class="col-md-2 d-flex align-items-end"><button type="submit" class="btn btn-primary w-100">Save Marks</button></div>
+</div>
+<div class="card"><div class="card-header bg-dark text-white"><span><i class="bi bi-people"></i> <span id="studentCount">0</span> Students</span></div>
+<div class="card-body">
+<table class="table table-bordered"><thead><tr><th>#</th><th>Admission</th><th>Name</th><th>Marks</th></tr></thead><tbody id="marksBody"><tr><td colspan="4" class="text-center text-muted">Select exam, class, subject</td></tr></tbody></table>
+</div></div></form>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+$(function(){
+    function load(){
+        var cls=$('#classSelect').val(), ex=$('#examSelect').val(), sub=$('#subjectSelect').val();
+        if(!cls||!ex||!sub){$('#marksBody').html('<tr><td colspan="4" class="text-muted text-center">Select all three</td></tr>');$('#studentCount').text('0');return;}
+        $.getJSON('/api/students-by-class/'+cls,function(data){
+            var t=$('#marksBody');t.empty();$('#studentCount').text(data.length);
+            if(!data||!data.length){t.html('<tr><td colspan="4" class="text-muted text-center">No students</td></tr>');return;}
+            $.each(data,function(i,s){
+                t.append('<tr><td>'+(i+1)+'</td><td>'+s.admission+'</td><td>'+s.name+'</td><td><input type="number" step="0.5" min="0" name="marks_'+s.id+'" id="mark_'+s.id+'" class="form-control mark-input"></td></tr>');
+                $.getJSON('/api/get-marks/'+s.id+'/'+ex+'/'+sub,function(m){if(m&&m.marks_obtained!==null)$('#mark_'+s.id).val(m.marks_obtained);});
+            });
+        });
+    }
+    $('#examSelect,#classSelect,#subjectSelect').change(load);
+});
+</script>
+{% endblock %}
