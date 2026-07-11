@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% block title %}- Students{% endblock %}
 {% block content %}
-<h2><i class="bi bi-people-fill"></i> Student Registration</h2>
+<h2><i class="bi bi-people-fill"></i> Student Registration
+    <a href="{{ url_for('clear_all_students') }}" class="btn btn-danger btn-sm float-end"
+       onclick="return confirm('Delete ALL students and their marks? This cannot be undone!')">
+       <i class="bi bi-trash"></i> Clear All Students
+    </a>
+</h2>
 <hr>
 
 <div class="row">

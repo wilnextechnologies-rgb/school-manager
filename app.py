@@ -56,6 +56,7 @@ class SchoolSettings(db.Model):
     term_begins = db.Column(db.String(20), nullable=True)
     closing_date = db.Column(db.String(20), nullable=True)
 
+
 class Class(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
@@ -790,6 +791,19 @@ def del_assignment(id):
     db.session.commit()
     flash('Assignment deleted.', 'success')
     return redirect(url_for('assignments'))
+@app.route('/students/clear-all')
+@admin_required
+def clear_all_students():
+    try:
+        Mark.query.delete()
+        Student.query.delete()
+        db.session.commit()
+        flash('All students and their marks have been deleted.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error: {str(e)}', 'danger')
+    return redirect(url_for('students'))
+
 
 if __name__ == '__main__':
     app.run()
