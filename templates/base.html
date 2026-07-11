@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
     <style>
         @media print { .no-print { display: none !important; } body { font-size: 10pt; } @page { size: A4; margin: 10mm; } }
+        body {
+            background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+            min-height: 100vh;
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -25,22 +29,24 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="bi bi-people"></i> Registration</a>
                     <ul class="dropdown-menu">
+                        {% if current_user.role == 'Admin' %}
                         <li><a class="dropdown-item" href="{{ url_for('students') }}">Students</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('students_import') }}">Import Students (CSV)</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('teachers') }}">Teachers</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('classes') }}">Classes</a></li>
-			<li><a class="dropdown-item" href="{{ url_for('assignments') }}">Assignments</a></li>
-			<li><a class="dropdown-item" href="{{ url_for('assign_teachers') }}">Assign Teachers</a></li>
-
+                        <li><a class="dropdown-item" href="{{ url_for('assign_teachers') }}">Assign Teachers</a></li>
+                        {% endif %}
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="bi bi-gear"></i> Settings</a>
                     <ul class="dropdown-menu">
+                        {% if current_user.role == 'Admin' %}
                         <li><a class="dropdown-item" href="{{ url_for('school_settings') }}">School Settings</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('exams') }}">Exam Types</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('grades') }}">Grades & Performance</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('subjects') }}">Subjects</a></li>
+                        {% endif %}
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -50,6 +56,7 @@
                         <li><a class="dropdown-item" href="{{ url_for('marks_import') }}">Import Marks (CSV)</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('merit_list') }}">Merit List</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('report_card') }}">Report Card</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('assignments') }}">Assignments</a></li>
                     </ul>
                 </li>
             </ul>
