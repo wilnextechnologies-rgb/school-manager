@@ -675,14 +675,18 @@ def bulk_report_cards_print():
 @admin_required
 def assign_teachers():
     if request.method == 'POST':
-        s = request.form.get('subject_id'); c = request.form.get('class_id'); t = request.form.get('teacher_name').strip()
-        if s and c and t:
-            ex = SubjectAssignment.query.filter_by(subject_id=s, class_id=c).first()
-            if ex: ex.teacher_name = t
-            else: db.session.add(SubjectAssignment(subject_id=s, class_id=c, teacher_name=t))
-            db.session.commit(); flash('Teacher assigned!', 'success')
+        subject_ids = request.form.getlist('subject_ids')
+        c = request.form.get('class_id')
+        t = request.form.get('teacher_name').strip()
+        if subject_ids and c and t:
+            for s in subject_ids:
+                ex = SubjectAssignment.query.filter_by(subject_id=s, class_id=c).first()
+                if ex: ex.teacher_name = t
+                else: db.session.add(SubjectAssignment(subject_id=s, class_id=c, teacher_name=t))
+            db.session.commit(); flash(f'Teacher assigned to {len(subject_ids)} subjects!', 'success')
         return redirect(url_for('assign_teachers'))
-    return render_template('assign_teachers.html', assignments=SubjectAssignment.query.all(), subjects=Subject.query.all(), classes=Class.query.all())
+    return render_template('assign_teachers.html', assignments=SubjectAssignment.query.all(),
+        subjects=Subject.query.all(), classes=Class.query.all())
 
 @app.route('/assign-teachers/delete/<int:id>')
 @admin_required
@@ -803,6 +807,24 @@ def clear_all_students():
         db.session.rollback()
         flash(f'Error: {str(e)}', 'danger')
     return redirect(url_for('students'))
+
+@app.route('/promote-students', methods=['GET', 'POST'])
+@admin_required
+def promote_students():
+    if request.method == 'POST':
+        from_class_id = request.form.get('from_class_id')
+        to_class_id = request.form.get('to_class_id')
+        if from_class_id and to_class_id:
+            students = Student.query.filter_by(class_id=from_class_id).all()
+            count = 0
+            for s in students:
+                s.class_id = to_class_id
+                count += 1
+            db.session.commit()
+            flash(f'{count} students promoted successfully!', 'success')
+            return redirect(url_for('promote_students'))
+    classes = Class.query.all()
+    return render_template('promote_students.html', classes=classes)
 
 
 if __name__ == '__main__':

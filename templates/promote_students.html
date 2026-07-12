@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block title %}- Promote Students{% endblock %}{% block content %}
+<h2><i class="bi bi-arrow-up-circle"></i> Promote Students</h2>
+<hr>
+<div class="row"><div class="col-md-6 mx-auto">
+<div class="card"><div class="card-header bg-success text-white">Promote to Next Class</div>
+<div class="card-body">
+<form method="POST" class="row g-3">
+<div class="col-12"><label>From Class</label>
+<select name="from_class_id" class="form-select" required>
+<option value="">Select Current Class</option>
+{% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div>
+<div class="col-12"><label>To Class</label>
+<select name="to_class_id" class="form-select" required>
+<option value="">Select Next Class</option>
+{% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div>
+<div class="col-12"><button type="submit" class="btn btn-success w-100" onclick="return confirm('Promote all students from this class?')">Promote Students</button></div>
+</form></div></div></div></div>
+{% endblock %}
