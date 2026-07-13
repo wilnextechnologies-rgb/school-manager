@@ -9,7 +9,7 @@ import os, csv, io
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-change-in-production'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///school.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'YOUR_NEON_CONNECTION_STRING'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
